@@ -20,6 +20,7 @@ public class ControleDeEstoqueController extends JFrame {
     private JTextArea outputArea;
     private JComboBox<Confeitaria> codigoRemoverField;
     private ProdutoDAO produtoDAO;
+    private JLabel precoTotalLabel;
 
     /**
      * Construtor da classe ControleDeEstoqueController.
@@ -166,9 +167,16 @@ public class ControleDeEstoqueController extends JFrame {
         outputArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(outputArea);
 
+        precoTotalLabel = new JLabel("Preço Total: 0.0");
+        precoTotalLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.add(precoTotalLabel);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
 
@@ -215,13 +223,15 @@ public class ControleDeEstoqueController extends JFrame {
             }
         });
     }
+
     /**
      * Cadastra um novo produto no estoque da confeitaria.
-     * @param codigo O código do produto.
-     * @param marca A marca do produto.
+     *
+     * @param codigo      O código do produto.
+     * @param marca       A marca do produto.
      * @param nomeProduto O nome do produto.
-     * @param quantidade A quantidade do produto.
-     * @param dataVal A data de validade do produto.
+     * @param quantidade  A quantidade do produto.
+     * @param dataVal     A data de validade do produto.
      */
 
     private void cadastrarProduto() {
@@ -242,6 +252,7 @@ public class ControleDeEstoqueController extends JFrame {
             showErrorDialog("Preencha todos os campos corretamente.");
             return;
         }
+
 
         if (codigo != 0 && marca != null && nomeProduto != null && preco != 0 && quantidade != 0 && dataVal != null && nota_fiscal != 0) {
             produtoDAO.cadastrarProduto(codigo, marca, nomeProduto, preco, quantidade, dataVal, nota_fiscal);
@@ -285,7 +296,7 @@ public class ControleDeEstoqueController extends JFrame {
 
         if (codigo != 0 && marca != null && nomeProduto != null && preco >= 0 && quantidade != 0 && dataVal != null && notaFiscal >= 0) {
             produtoDAO.editarProduto(codigo, marca, nomeProduto, preco, quantidade, dataVal, notaFiscal);
-            outputArea.append("Produto editado com sucesso!" + "\nCódigo: " + codigo + "\nMarca: " + marca + "\nProduto: " + nomeProduto + "\nPreco: " + preco +  "\nQuantidade: " + quantidade + "\nData de Validade: " + dataVal + "\nNota Fiscal: " + notaFiscal + "\n");
+            outputArea.append("Produto editado com sucesso!" + "\nCódigo: " + codigo + "\nMarca: " + marca + "\nProduto: " + nomeProduto + "\nPreco: " + preco + "\nQuantidade: " + quantidade + "\nData de Validade: " + dataVal + "\nNota Fiscal: " + notaFiscal + "\n");
             outputArea.append("\n");
             clearFields();
             atualizarListaDeProdutos();
@@ -317,7 +328,7 @@ public class ControleDeEstoqueController extends JFrame {
         outputArea.setText("");
         codigoRemoverField.removeAllItems();
         codigoRemoverField.addItem(null);
-        codigoRemoverField.addItem(new Confeitaria(0, "", "", (double) 0, 0, "",0 ));
+        codigoRemoverField.addItem(new Confeitaria(0, "", "", (double) 0, 0, "", 0));
 
         ResultSet resultSet = produtoDAO.listarProdutos();
 
@@ -330,7 +341,7 @@ public class ControleDeEstoqueController extends JFrame {
                 int quantidade = resultSet.getInt("quantidade");
                 String dataVal = resultSet.getString("data_validade");
                 int notaFiscal = resultSet.getInt("nota_fiscal");
-                Confeitaria confeitaria = new Confeitaria(codigo, marca, nomeProduto,preco, quantidade, dataVal,  notaFiscal);
+                Confeitaria confeitaria = new Confeitaria(codigo, marca, nomeProduto, preco, quantidade, dataVal, notaFiscal);
                 outputArea.append("Produtos listados: " + "\nCódigo: " + codigo + "\nMarca: " + marca + "\nProduto: " + nomeProduto + "\nPreco: " + preco + "\nQuantidade: " + quantidade + "\nData de Validade: " + dataVal + "\nNota Fiscal: " + notaFiscal + "\n\n");
                 codigoRemoverField.addItem(confeitaria);
             }
@@ -338,6 +349,27 @@ public class ControleDeEstoqueController extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        atualizarPrecoTotal();
+    }
+
+    private void atualizarPrecoTotal() {
+        double precoTotal = 0.0;
+
+        ResultSet resultSet = produtoDAO.listarProdutos();
+        try {
+            while (resultSet.next()) {
+                double preco = resultSet.getDouble("preco");
+                int quantidade = resultSet.getInt("quantidade");
+                precoTotal += preco * quantidade;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        //precoTotalLabel.setText("Preço Total: " + precoTotal);
+        String precoTotalFormatado = String.format("%.2f", precoTotal);
+
+        precoTotalLabel.setText("Preço Total: " + precoTotalFormatado);
     }
 
     private void atualizarListaDeProdutos() {
