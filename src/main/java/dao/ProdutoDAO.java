@@ -15,7 +15,17 @@ public class ProdutoDAO {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:estoque.db");
             Statement statement = connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS produtos (codigo INTEGER PRIMARY KEY, marca TEXT, nome TEXT, preco REAL, quantidade INTEGER, data_validade TEXT, nota_fiscal INTEGER)");
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS produtos (" +
+                            "codigo INTEGER PRIMARY KEY, " +
+                            "marca TEXT, " +
+                            "nome TEXT, " +
+                            "preco REAL, " +
+                            "quantidade INTEGER, " +
+                            "data_validade TEXT, " +
+                            "nota_fiscal INTEGER" +
+                            ")"
+            );
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -25,16 +35,27 @@ public class ProdutoDAO {
     /**
      * Adiciona um novo produto ao banco de dados.
      *
-     * @param codigo       O código do produto.
-     * @param marca        A marca do produto.
-     * @param nomeProduto  O nome do produto.
-     * @param quantidade   A quantidade do produto.
-     * @param dataVal      A data de validade do produto.
+     * @param codigo      O código do produto.
+     * @param marca       A marca do produto.
+     * @param nomeProduto O nome do produto.
+     * @param preco       O preço do produto.
+     * @param quantidade  A quantidade do produto.
+     * @param dataVal     A data de validade do produto.
+     * @param nota_fiscal A nota fiscal do produto.
      */
-
     public void cadastrarProduto(int codigo, String marca, String nomeProduto, Double preco, int quantidade, String dataVal, int nota_fiscal) {
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO produtos (codigo, marca, nome, preco, quantidade, data_validade, nota_fiscal) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO produtos (" +
+                            "codigo, " +
+                            "marca, " +
+                            "nome, " +
+                            "preco, " +
+                            "quantidade, " +
+                            "data_validade, " +
+                            "nota_fiscal" +
+                            ") VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
             statement.setInt(1, codigo);
             statement.setString(2, marca);
             statement.setString(3, nomeProduto);
@@ -49,19 +70,30 @@ public class ProdutoDAO {
         }
     }
 
+
     /**
      * Edita um produto existente no banco de dados.
      *
-     * @param codigo       O código do produto a ser editado.
-     * @param marca        A nova marca do produto.
-     * @param nomeProduto  O novo nome do produto.
-     * @param quantidade   A nova quantidade do produto.
-     * @param dataVal      A nova data de validade do produto.
+     * @param codigo      O código do produto a ser editado.
+     * @param marca       A nova marca do produto.
+     * @param nomeProduto O novo nome do produto.
+     * @param preco       O novo preço do produto.
+     * @param quantidade  A nova quantidade do produto.
+     * @param dataVal     A nova data de validade do produto.
+     * @param nota_fiscal A nova nota fiscal do produto.
      */
-
     public void editarProduto(int codigo, String marca, String nomeProduto, Double preco, int quantidade, String dataVal, int nota_fiscal) {
         try {
-            PreparedStatement statement = connection.prepareStatement("UPDATE produtos SET marca = ?, nome = ?, preco = ?, quantidade = ?, data_validade = ?, nota_fiscal = ? WHERE codigo = ?");
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE produtos SET " +
+                            "marca = ?, " +
+                            "nome = ?, " +
+                            "preco = ?, " +
+                            "quantidade = ?, " +
+                            "data_validade = ?, " +
+                            "nota_fiscal = ? " +
+                            "WHERE codigo = ?"
+            );
             statement.setString(1, marca);
             statement.setString(2, nomeProduto);
             statement.setDouble(3, preco);
@@ -75,6 +107,7 @@ public class ProdutoDAO {
             ex.printStackTrace();
         }
     }
+
 
     /**
      * Remove um produto do banco de dados.

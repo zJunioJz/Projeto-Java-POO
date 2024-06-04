@@ -18,8 +18,10 @@ public class Confeitaria {
      * @param codigo O código do produto.
      * @param marca A marca do produto.
      * @param nomeProduto O nome do produto.
+     * @param preco O preço do produto.
      * @param quantidade A quantidade do produto.
      * @param dataVal A data de validade do produto.
+     * @param notaFiscal A nota fiscal do produto.
      */
 
     public Confeitaria(int codigo, String marca, String nomeProduto, Double preco, int quantidade, String dataVal, int notaFiscal) {
